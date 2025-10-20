@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Mea+Culpa&display=swap');
+    body{
+        background-color: rgb(202, 202, 202);
+        background-repeat: no-repeat;
+        background-position: 278px -12px;
+        font-family: "Mea Culpa", cursive;
+    }
+    h1{
+        margin-top: 15px;
+        color: greenyellow;
+        text-shadow:0px 0px 10px black,0px 0px 20px black,0px 0px 50px black;
+        text-align: center;
+        font-family: 'Showcard Gothic';
+        font-size: 43px;
+    }
+    .container{
+        height: 557px;
+        width: 258px;
+        display: flex;
+        justify-self: center;
+        margin-top: 70px;
+        background-color: rgb(82, 82, 255);
+        border-radius: 30px;
+    }
+    .name{
+        position: absolute;
+        font-size: 30px;
+        margin: 73px 0 0 77px;
+        opacity: 0.8;
+        transform: rotate(1deg);
+        font-weight: 600;
+        z-index: 1;
+    }
+    .surname{
+        position: absolute;
+        font-size: 70px;
+        color: white;
+        opacity: 0.7;
+        margin:35px 0 0 39px;
+        font-weight: 600;
+        transform: rotate(1deg);
+    }
+    .box{
+        width: 258px;
+        height: 450px;
+        margin-top: 107px;
+        justify-items: center;
+        background-color: black;
+        border-radius: 30px;
+    }
+    .qrbox{
+        width: 170px;
+        height: 170px;
+        margin-top: 50px;
+        background-color: black;
+        border: 3px solid blue;
+        border-radius: 13px;
+        justify-items: center;
+    }
+    .innerbox{
+        width: 146px;
+        height: 146px;
+        margin-top: 6px;
+        border-radius: 3px;
+        background-color: white;
+        padding: 5px;
+    }
+    .input p{
+        color: white;
+        font-family: arial;
+        font-size: 11px;
+        margin: 46px 0 -58px 4px;
+    }
+    input{
+        margin-top: 60px;
+        font-size: 17px;
+        height: 34px;
+        width: 240px;
+        border-radius: 6px;
+        background-color: rgb(23, 23, 23);
+        border: 0px solid rgb(94, 94, 94);
+        text-align: center;
+        color: rgba(242, 242, 242, 0.793);
+    }
+    button{
+        width: 220px;
+        height: 40px;
+        margin: 25px 0 25px 20px;
+        font-size: 17px;
+        font-family: arial;
+        color: white;
+        border-radius: 10px;
+        border: none;
+        background-color: rgb(82, 82, 255);
+    }
+    button:hover{
+        cursor: pointer;
+        background-color: rgb(39, 39, 255);
+        transition: 0.3s ease-in-out;
+    }
+    button:active{
+        font-size: 14px;
+        margin: 25px 0 25px 20px;
+    }
+    .glass {
+        position: relative;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(2px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        /* border-radius: 1.5rem; */
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+                    inset 0 4px 20px rgba(255, 255, 255, 0.3);
+    }
+    .footer{
+        width: 258px;
+        height: 40px;
+        margin-top: -4px;
+        background-color: rgb(86, 86, 86);
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+    }
+    .icon i{
+        margin:10px 0 0 120px;
+        color: white;
+    }
+</style>
+</head>
+<body background="mobilebg.jpg">
+    <h1>QR Code Generater</h1>
+    <div class="container"><p class="name">Kartik</p><p class="surname">Nama</p>
+        <div class="box">
+            <div class="qrbox">
+                <div class="innerbox">
+                    <div id="qrcode"></div>
+                </div>
+            </div>
+            <div class="input">
+                <p>enter here URL</p>
+                <input class="glass" type="text" id="text" value="Kartik!">
+            </div>
+            <div class="btn">
+                <button onclick="generateQRCode()">Generate</button>
+                <div class="footer">
+                    <div class="icon">
+                        <i class="fa-solid fa-circle" style="width: 20px;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            width : 145,
+            height : 145,
+        });
+
+        function generateQRCode() {
+            var text = document.getElementById("text").value;
+            qrcode.makeCode(text);
+        }
+    </script>
+</body>
+</html>
