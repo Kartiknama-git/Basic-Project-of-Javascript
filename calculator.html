@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container{
+            margin: 140px auto;
+            width: 550px;
+            height: 470px;
+            padding: 5px;
+            border-radius: 20px;
+            background-color: rgb(46, 46, 46);
+        }
+        .show{
+            text-align: center;
+            color: white;
+            margin-top: 2px;
+            font-size: 29px;
+            font-weight: 550;
+            font-family: arial;
+        }
+        .show input{
+            width: 96%;
+            height: 57px;
+            color: white;
+            background-color: rgba(102, 96, 96, 0.589);
+            outline: none;
+            margin: 5px 0 10px 0;
+            text-align:right;
+            font-size: 44px;
+            border-radius: 10px;
+        }
+        #org{
+            color: white;
+            background-color: rgb(255, 176, 29);
+            box-shadow: 5px 5px 2px rgba(207, 207, 207, 0.904);
+        }
+        .btn{
+            width: 117px;
+            height: 55px;
+            font-size: 31px;
+            font-weight: 550;
+            color: rgb(74, 74, 74);
+            border: none;
+            border-radius: 5px;
+            margin: 2px 0 10px 13px;
+            box-shadow: 5px 5px 2px rgba(255, 177, 10, 0.904);
+
+        }
+        .btnn{  
+            width: 250px;
+            height: 55px;
+            font-size: 50px;
+            border-radius: 2px;
+            margin:0 0 8px 10px;
+            color: white;
+            background-color: rgb(255, 123, 0);
+            border: none;
+            box-shadow: 5px 5px 2px rgba(207, 207, 207, 0.904);
+        }
+        .btn:hover,.btnn:hover{
+            /* box-shadow: 0px 0px 20px rgb(209, 209, 209); */
+            cursor: pointer;
+            /* background-color: rgb(68, 68, 68); */
+            transition: 0.4s;
+            /* color: white; */
+        }
+        .btn:active{
+            width: 117px;
+            height: 55px;
+            transform: scale(0.88);
+            /* margin: 2px 0 10px 18px; */
+        }
+        .btnn:active{
+            width: 250px;
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="show">Calculator
+            <input type="text" placeholder="0" id="txt">
+        </div>
+        <table>
+            <tr>
+                <td><button onclick="rem()" class="btn">X</button></td>
+                <td><button onclick="allc()" class="btn">AC</button></td>
+                <td><button onclick="cal('%')" class="btn">%</button></td>
+                <td><button onclick="cal('/')" class="btn" id="org">/</button></td>
+            </tr>
+            <tr>
+                <td><button onclick="cal('7')" class="btn">7</button></td>
+                <td><button onclick="cal('8')" class="btn">8</button></td>
+                <td><button onclick="cal('9')" class="btn">9</button></td>
+                <td><button onclick="cal('*')" class="btn" id="org">*</button></td>
+            </tr>
+            <tr>
+                <td><button onclick="cal('4')" class="btn">4</button></td>
+                <td><button onclick="cal('5')" class="btn">5</button></td>
+                <td><button onclick="cal('6')" class="btn">6</button></td>
+                <td><button onclick="cal('-')" class="btn" id="org">-</button></td>
+            </tr>
+            <tr>
+                <td><button onclick="cal('1')" class="btn">1</button></td>
+                <td><button onclick="cal('2')" class="btn">2</button></td>
+                <td><button onclick="cal('3')" class="btn">3</button></td>
+                <td><button onclick="cal('+')" class="btn" id="org">+</button></td>
+            </tr>
+             <tr>
+                <td><button onclick="cal('0')" class="btn">0</button></td>
+                <td><button onclick="cal('.')" class="btn">.</button></td>
+                <td colspan="2"><button onclick="equ()" class="btnn">=</button></td>
+            </tr>
+        </table>
+    </div>
+
+<script>
+    function cal(value){
+        txt.value += value;
+    }
+    function allc(){
+        txt.value = '';
+    }
+    function rem(){
+        txt.value = txt.value.slice(0,-1);
+    }
+    function equ(){
+        try {
+        let result = eval(txt.value.replace('x', '*').replace('÷', '/'));
+        txt.value = result;
+        } catch (e) {
+            txt.value = 'Error';
+        }
+    }
+</script>
+
+
+</body>
+</html>
