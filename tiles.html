@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Of Tiles</title>
+    <style>
+        :root{
+            --bg-color: #373f39;
+            --tile-color: #9a6406;
+            --text-color: #ecf0f1;
+            --accent-color: #ffbb00;
+            --empty-color: #373f39;
+        }
+        body{
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1{
+            margin-top: -60px;
+            font-size: 70px;
+        }
+        .stats{
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        #game-container{
+            display: grid;
+            grid-template-columns: repeat(3,100px);
+            grid-template-rows: repeat(3,100px);
+            gap: 10px;
+            background-color: #ffefb3;
+            padding: 10px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,1);
+        }
+        .tile{
+            width: 100px;
+            height: 100px;
+            background-color: var(--tile-color);
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: inset -10px 10px 20px rgba(0,0,0,1);
+        }
+        .tile:active{
+            transform: scale(0.90);
+        }
+        .tile.empty{
+            background-color: var(--empty-color);
+            cursor: default;
+            box-shadow: none;
+            box-shadow: inset -10px 10px 20px rgba(0,0,0,1);
+
+        }
+        button{
+            margin-top: 30px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.3s;
+        }
+        button:hover{
+            background-color: #c0892b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Of Tiles</h1>
+    {Kartik's Project}<br>
+    <div class="stats">
+        <span>Moves: <span id="move-count">0</span></span>
+        <span>Time: <span id="timer">00:00</span></span>
+    </div>
+    <div id="game-container"></div>
+    <button onclick="resetGame()">Shuffle & Start</button>
+    <script>
+        const container = document.getElementById('game-container');
+        const moveDisplay = document.getElementById('move-count');
+        const timerDisplay = document.getElementById('timer');
+        let tiles = [1,2,3,4,5,6,7,8,null];
+        let moves = 0;
+        let seconds = 0;
+        let timerInterval = null;
+        let gameStarted = false;
+
+        function createBoard(){
+            container.innerHTML = '';
+            tiles.forEach((tile, index) => {
+                const tileDiv = document.createElement('div');
+                tileDiv.classList.add('tile');
+                if(tile === null){
+                    tileDiv.classList.add('empty');
+                }else{
+                    tileDiv.textContent = tile;
+                    tileDiv.onclick = () => moveTile(index);
+                }
+                container.appendChild(tileDiv);
+            });
+        }
+
+        function moveTile(index){
+            const emptyIndex = tiles.indexOf(null);
+            if(isAdjacent(index, emptyIndex)){
+                swap(index, emptyIndex);
+                if(gameStarted){
+                    moves++;
+                    moveDisplay.textContent = moves;
+                    checkWin();
+                }
+                createBoard();
+            }
+        }
+
+        function isAdjacent(idx1, idx2){
+            const row1 = Math.floor(idx1 / 3),col1 = idx1 % 3;
+            const row2 = Math.floor(idx2 / 3),col2 = idx2 % 3;
+            return Math.abs(row1 - row2) + Math.abs(col1 - col2) === 1;
+        }
+
+        function swap(idx1, idx2){
+            [tiles[idx1], tiles[idx2]] = [tiles[idx2], tiles[idx1]]
+        }
+
+        function resetGame(){
+            moves = 0;
+            seconds = 0;
+            gameStarted = false;
+            moveDisplay.textContent = moves;
+            timerDisplay.textContent = "00:00";
+            clearInterval(timerInterval);
+
+        tiles = [1,2,3,4,5,6,7,8,null];
+        for(let i=0; i<100; i++){
+            const epmtyIdx = tiles.indexOf(null);
+            const neighbors = [];
+            if(epmtyIdx % 3 > 0)neighbors.push(epmtyIdx - 1);
+            if(epmtyIdx % 3 < 2)neighbors.push(epmtyIdx + 1);
+            if(epmtyIdx > 2)neighbors.push(epmtyIdx - 3);
+            if(epmtyIdx < 6)neighbors.push(epmtyIdx + 3);
+            const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
+            swap(epmtyIdx, randomNeighbor)
+        }
+
+        gameStarted = true;
+        createBoard();
+        startTimer();
+    }
+
+    function startTimer(){
+        timerInterval = setInterval(() => {
+            seconds++;
+            const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+            const secs = String(seconds % 60).padStart(2, '0');
+            timerDisplay.textContent = `${mins}:${secs}`;
+        }, 1000);
+    }
+
+    function checkWin(){
+        const win = [1,2,3,4,5,6,7,8, null].every((v,i) => v === tiles[i]);
+        if(win){
+            gameStarted = false;
+            clearInterval(timerInterval);
+            setTimeout(() => alert(`Winner! Moves: ${moves} Time: ${timerDisplay.textContent}`), 200);
+        }
+    }
+    createBoard();
+    </script>
+</body>
+</html>
