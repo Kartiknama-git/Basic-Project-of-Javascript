@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Stone·Paper·Scissors | Elegant Duel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            padding: 20px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* subtle background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 28px 28px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* main container - white glass card */
+        .game-card {
+            max-width: 680px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(0px);
+            border-radius: 48px;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0,0,0,0.02);
+            padding: 28px 24px 32px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(203, 213, 225, 0.6);
+            z-index: 2;
+        }
+
+        /* header */
+        .game-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .game-header h1 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            background: linear-gradient(125deg, #1e293b, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .game-header h1 i {
+            background: none;
+            -webkit-background-clip: unset;
+            color: #3b82f6;
+        }
+        .sub {
+            color: #475569;
+            font-weight: 500;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            background: #f1f5f9;
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 40px;
+        }
+
+        /* score panel - modern minimal */
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            background: #f8fafc;
+            border-radius: 60px;
+            padding: 12px 20px;
+            margin-bottom: 28px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .score-item {
+            flex: 1;
+            text-align: center;
+            background: white;
+            border-radius: 48px;
+            padding: 10px 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .score-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+        .score-value {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1;
+            margin-top: 4px;
+        }
+
+        /* arena (player vs bot) */
+        .arena {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 24px;
+        }
+        .fighter-card {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 40px;
+            padding: 18px 12px;
+            text-align: center;
+            box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eef2ff;
+            transition: transform 0.2s;
+        }
+        .fighter-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 12px;
+        }
+        .choice-icon-area {
+            min-height: 110px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 12px 0;
+        }
+        .choice-icon-area i {
+            font-size: 4.2rem;
+            color: #3b82f6;
+            transition: all 0.2s;
+        }
+        .choice-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #475569;
+            background: #f1f5f9;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+        .vs-badge {
+            background: #eef2ff;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+            font-weight: 800;
+            color: #3b82f6;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+        }
+
+        /* result message */
+        .result-area {
+            background: #f1f5f9;
+            border-radius: 60px;
+            padding: 14px 18px;
+            text-align: center;
+            margin: 16px 0 28px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #0f172a;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* action buttons - stone, paper, scissors */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+        .game-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 80px;
+            padding: 14px 24px;
+            min-width: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+        .game-btn i {
+            font-size: 2rem;
+            color: #3b82f6;
+        }
+        .game-btn:hover {
+            transform: translateY(-4px);
+            border-color: #3b82f6;
+            background: #fefefe;
+            box-shadow: 0 12px 20px -12px rgba(59,130,246,0.3);
+        }
+        .game-btn:active {
+            transform: translateY(2px);
+        }
+
+        /* reset button */
+        .reset-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 8px 0 16px;
+        }
+        .reset-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            border: 1px solid #e2e8f0;
+        }
+        .reset-btn:hover {
+            background: #eef2ff;
+            color: #1e40af;
+            transform: scale(0.98);
+        }
+
+        /* history log */
+        .history-log {
+            background: #f8fafc;
+            border-radius: 36px;
+            padding: 14px 16px;
+            margin-top: 16px;
+            text-align: center;
+            border: 1px solid #eef2ff;
+        }
+        .history-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 1px;
+        }
+        .history-text {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #334155;
+            margin-top: 6px;
+            word-break: break-word;
+            font-family: monospace;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.65rem;
+            color: #94a3b8;
+            margin-top: 24px;
+        }
+
+        /* animations */
+        @keyframes gentlePulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.02); background: #eef2ff; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .winner-glow {
+            animation: gentlePulse 0.4s ease;
+        }
+
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* mobile first optimizations */
+        @media (max-width: 550px) {
+            body {
+                padding: 12px;
+                align-items: flex-start;
+            }
+            .game-card {
+                padding: 20px 16px 24px;
+                border-radius: 36px;
+            }
+            .game-header h1 {
+                font-size: 1.6rem;
+            }
+            .score-value {
+                font-size: 1.8rem;
+            }
+            .score-board {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+            .fighter-card {
+                padding: 12px 8px;
+            }
+            .choice-icon-area i {
+                font-size: 3rem;
+            }
+            .choice-icon-area {
+                min-height: 85px;
+            }
+            .vs-badge {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+            .game-btn {
+                min-width: 85px;
+                padding: 10px 12px;
+            }
+            .game-btn i {
+                font-size: 1.6rem;
+            }
+            .result-area {
+                font-size: 0.9rem;
+                padding: 10px 14px;
+            }
+            .action-buttons {
+                gap: 10px;
+            }
+        }
+
+        /* touch friendly */
+        .game-btn, .reset-btn {
+            touch-action: manipulation;
+        }
+
+        .clicked {
+            transform: scale(0.96);
+            transition: 0.05s;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <div class="game-header">
+        <h1>
+            <i class="fas fa-hand-peace"></i> 
+            Stone · Paper · Scissors
+            <i class="fas fa-gamepad"></i>
+        </h1>
+        <div class="sub">⚡ Play Namaji's Game ⚡</div>
+    </div>
+
+    <!-- Score panel -->
+    <div class="score-board">
+        <div class="score-item">
+            <div class="score-label">🙋 YOU</div>
+            <div class="score-value" id="playerScore">0</div>
+        </div>
+        <div class="score-item">
+            <div class="score-label">🤖 BOT</div>
+            <div class="score-value" id="botScore">0</div>
+        </div>
+        <div class="score-item">
+            <div class="score-label">⚖️ TIES</div>
+            <div class="score-value" id="tiesCount">0</div>
+        </div>
+    </div>
+
+    <!-- Arena display -->
+    <div class="arena">
+        <div class="fighter-card">
+            <h3><i class="fas fa-user"></i> YOU</h3>
+            <div class="choice-icon-area" id="playerIcon">
+                <i class="far fa-question-circle"></i>
+            </div>
+            <div class="choice-name" id="playerChoiceName">—</div>
+        </div>
+        <div class="vs-badge">VS</div>
+        <div class="fighter-card">
+            <h3><i class="fas fa-microchip"></i> BOT</h3>
+            <div class="choice-icon-area" id="botIcon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="choice-name" id="botChoiceName">—</div>
+        </div>
+    </div>
+
+    <!-- Result message -->
+    <div class="result-area" id="resultMsg">
+        ✨ tap any button to start the game ✨
+    </div>
+
+    <!-- Game controls -->
+    <div class="action-buttons">
+        <button class="game-btn" data-move="stone">
+            <i class="fas fa-hand-back-fist"></i>
+            <span>STONE</span>
+        </button>
+        <button class="game-btn" data-move="paper">
+            <i class="fas fa-hand-peace"></i>
+            <span>PAPER</span>
+        </button>
+        <button class="game-btn" data-move="scissors">
+            <i class="fas fa-hand-scissors"></i>
+            <span>SCISSORS</span>
+        </button>
+    </div>
+
+    <div class="reset-wrapper">
+        <button class="reset-btn" id="resetGame">
+            <i class="fas fa-undo-alt"></i> RESET GAME
+        </button>
+    </div>
+
+    <!-- <div class="history-log">
+        <div class="history-title"><i class="far fa-clock"></i> LAST ROUNDS</div>
+        <div class="history-text" id="historyList">—</div>
+    </div> -->
+    <footer>🎯 Developed By <b>&hearts;Kartiknama&hearts;</b> &copy;Pvt. Property</footer>
+</div>
+
+<script>
+    // Game state
+    let playerScore = 0;
+    let botScore = 0;
+    let ties = 0;
+    let roundHistory = []; // store last 5-6 entries
+
+    // DOM elements
+    const playerScoreEl = document.getElementById('playerScore');
+    const botScoreEl = document.getElementById('botScore');
+    const tiesEl = document.getElementById('tiesCount');
+    const playerIconDiv = document.getElementById('playerIcon');
+    const botIconDiv = document.getElementById('botIcon');
+    const playerChoiceSpan = document.getElementById('playerChoiceName');
+    const botChoiceSpan = document.getElementById('botChoiceName');
+    const resultMsgDiv = document.getElementById('resultMsg');
+    const historyListDiv = document.getElementById('historyList');
+
+    // Move mapping: icon & display name
+    const movesLibrary = {
+        stone: { icon: 'fas fa-hand-back-fist', display: 'STONE', emoji: '🪨' },
+        paper: { icon: 'fas fa-hand-peace', display: 'PAPER', emoji: '📄' },
+        scissors: { icon: 'fas fa-hand-scissors', display: 'SCISSORS', emoji: '✂️' }
+    };
+
+    // Helper: get bot move
+    function getBotMove() {
+        const moves = ['stone', 'paper', 'scissors'];
+        const rand = Math.floor(Math.random() * 3);
+        return moves[rand];
+    }
+
+    // Determine winner: 'player', 'bot', 'tie'
+    function getWinner(player, bot) {
+        if (player === bot) return 'tie';
+        if (
+            (player === 'stone' && bot === 'scissors') ||
+            (player === 'paper' && bot === 'stone') ||
+            (player === 'scissors' && bot === 'paper')
+        ) {
+            return 'player';
+        }
+        return 'bot';
+    }
+
+    // Update UI with icons and names
+    function updateChoiceUI(choice, iconContainer, nameSpan) {
+        if (!choice) {
+            iconContainer.innerHTML = `<i class="far fa-question-circle" style="font-size: 3.8rem; color:#94a3b8;"></i>`;
+            nameSpan.innerText = '—';
+            return;
+        }
+        const move = movesLibrary[choice];
+        if (move) {
+            iconContainer.innerHTML = `<i class="${move.icon}" style="font-size: 4rem; color:#3b82f6; transition:all 0.2s;"></i>`;
+            nameSpan.innerText = move.display;
+        } else {
+            iconContainer.innerHTML = `<i class="fas fa-times" style="font-size: 3rem;"></i>`;
+            nameSpan.innerText = '?';
+        }
+    }
+
+    // update score numbers with animation
+    function updateScoresUI() {
+        playerScoreEl.innerText = playerScore;
+        botScoreEl.innerText = botScore;
+        tiesEl.innerText = ties;
+        // micro bounce effect
+        [playerScoreEl, botScoreEl, tiesEl].forEach(el => {
+            el.style.transform = 'scale(1.08)';
+            setTimeout(() => { el.style.transform = ''; }, 180);
+        });
+    }
+
+    // add message to history
+    function pushToHistory(playerMove, botMove, winner) {
+        const playerEmoji = movesLibrary[playerMove]?.emoji || '?';
+        const botEmoji = movesLibrary[botMove]?.emoji || '?';
+        let resultSymbol = '';
+        if (winner === 'player') resultSymbol = '🏆 YOU WIN';
+        else if (winner === 'bot') resultSymbol = '🤖 BOT WINS';
+        else resultSymbol = '⚖️ TIE';
+        const historyEntry = `${playerEmoji}  vs  ${botEmoji}  →  ${resultSymbol}`;
+        roundHistory.unshift(historyEntry);
+        if (roundHistory.length > 6) roundHistory.pop();
+        if (roundHistory.length === 0) historyListDiv.innerHTML = '—';
+        else historyListDiv.innerHTML = roundHistory.join('  ·  ');
+    }
+
+    // core game round
+    function playRound(playerMove) {
+        const botMove = getBotMove();
+        const winner = getWinner(playerMove, botMove);
+        
+        // update UI choices
+        updateChoiceUI(playerMove, playerIconDiv, playerChoiceSpan);
+        updateChoiceUI(botMove, botIconDiv, botChoiceSpan);
+        
+        let resultText = '';
+        let winFlag = false;
+        
+        if (winner === 'player') {
+            playerScore++;
+            resultText = `🎉 VICTORY! you get +1 point! 🎉`;
+            winFlag = true;
+        } else if (winner === 'bot') {
+            botScore++;
+            resultText = `💀 DEFEAT! Bot Win 💀`;
+        } else {
+            ties++;
+            resultText = `⚖️ TIE! Both chose same. ⚖️`;
+        }
+        
+        updateScoresUI();
+        resultMsgDiv.innerHTML = resultText;
+        pushToHistory(playerMove, botMove, winner);
+        
+        // add visual feedback to arena
+        const arenaContainer = document.querySelector('.arena');
+        arenaContainer.style.animation = 'none';
+        arenaContainer.offsetHeight;
+        arenaContainer.style.animation = 'fadeUp 0.25s ease';
+        setTimeout(() => { arenaContainer.style.animation = ''; }, 250);
+        
+        // Winner highlight effect
+        if (winner === 'player') {
+            resultMsgDiv.classList.add('winner-glow');
+            setTimeout(() => resultMsgDiv.classList.remove('winner-glow'), 500);
+            // add nice floating win indicator
+            const toast = document.createElement('div');
+            toast.innerText = '✨ +1 POINT ✨';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '30%';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.backgroundColor = '#3b82f6';
+            toast.style.color = 'white';
+            toast.style.padding = '6px 18px';
+            toast.style.borderRadius = '40px';
+            toast.style.fontWeight = '600';
+            toast.style.fontSize = '0.8rem';
+            toast.style.zIndex = '999';
+            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            toast.style.animation = 'fadeUp 0.5s forwards';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 800);
+        } else if (winner === 'bot') {
+            const shakeDiv = document.querySelector('.fighter-card:last-child');
+            shakeDiv.style.transform = 'scale(1.02)';
+            setTimeout(() => { shakeDiv.style.transform = ''; }, 200);
+        }
+    }
+    
+    // reset everything
+    function resetFullGame() {
+        playerScore = 0;
+        botScore = 0;
+        ties = 0;
+        roundHistory = [];
+        updateScoresUI();
+        historyListDiv.innerHTML = '—';
+        resultMsgDiv.innerHTML = '🔄 Game reset! Make your move. 🔄';
+        // reset icons to neutral
+        updateChoiceUI(null, playerIconDiv, playerChoiceSpan);
+        updateChoiceUI(null, botIconDiv, botChoiceSpan);
+        // small ripple effect
+        const resetBtn = document.getElementById('resetGame');
+        resetBtn.style.transform = 'scale(0.96)';
+        setTimeout(() => { resetBtn.style.transform = ''; }, 150);
+    }
+    
+    // attach event listeners to game buttons
+    const gameBtns = document.querySelectorAll('.game-btn');
+    gameBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const move = btn.getAttribute('data-move');
+            if (!move) return;
+            // tap feedback
+            btn.classList.add('clicked');
+            setTimeout(() => btn.classList.remove('clicked'), 120);
+            playRound(move);
+        });
+        // touchstart for mobile speed
+        btn.addEventListener('touchstart', (e) => {
+            // just to ensure fast response, no double fire
+        });
+    });
+    
+    const resetBtn = document.getElementById('resetGame');
+    resetBtn.addEventListener('click', () => {
+        resetFullGame();
+    });
+    
+    // initial setup: neutral display
+    updateChoiceUI(null, playerIconDiv, playerChoiceSpan);
+    updateChoiceUI(null, botIconDiv, botChoiceSpan);
+    playerScoreEl.innerText = '0';
+    botScoreEl.innerText = '0';
+    tiesEl.innerText = '0';
+    
+    // Add subtle hover effect on mobile friendly 
+    if ('ontouchstart' in window) {
+        // for mobile, remove hover sticky states
+        const style = document.createElement('style');
+        style.textContent = `.game-btn:hover { transform: none; }`;
+        document.head.appendChild(style);
+    }
+    
+    // Animate score highlight on each update via observer optional
+    console.log("✨ White theme | Mobile ready | Stone Paper Scissors loaded");
+    
+    // Extra touch: Add dynamic background transition on result
+    const gameCard = document.querySelector('.game-card');
+    const observer = new MutationObserver(() => {
+        if (resultMsgDiv.innerText.includes('VICTORY')) {
+            gameCard.style.transition = 'box-shadow 0.2s';
+            gameCard.style.boxShadow = '0 20px 35px -12px rgba(59,130,246,0.2)';
+            setTimeout(() => { gameCard.style.boxShadow = ''; }, 400);
+        }
+    });
+    observer.observe(resultMsgDiv, { childList: true, characterData: true, subtree: true });
+</script>
+</body>
+</html>
