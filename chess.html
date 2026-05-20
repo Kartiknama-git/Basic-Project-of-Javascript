@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>♔ CHESS MASTER · Premium Sound · 2 Player</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at 40% 20%, #ffffff, #03060c);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 6px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(ellipse at 40% 50%, rgba(5, 101, 204, 0.319), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .chess-premium {
+            max-width: 780px;
+            width: 100%;
+            background: rgba(45, 45, 45, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 56px;
+            padding: 20px 18px 28px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6), 0 0 10px 5px rgba(2, 195, 220, 0.536);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .hero-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 0 8px;
+        }
+        .title-glow h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: linear-gradient(205deg, #efc560, #6be6ff, #ff81dd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            margin-left: -5px;
+            gap: 10px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .title-glow p {
+            font-size: 0.8rem;
+            color: #8ba5d6;
+            letter-spacing: 1px;
+        }
+        .theme-selector {
+            background: rgba(189, 189, 189, 0.473);
+            border-radius: 50px;
+            padding: 2px 5px;
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .theme-chip {
+            background: transparent;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.79rem;
+            color: #000000;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .theme-chip.active {
+            background: #000000;
+            color: white;
+            box-shadow: -2px 4px 25px rgba(59, 131, 246, 0.618);
+        }
+
+        .turn-status {
+            background: linear-gradient(105deg, rgba(255, 255, 255, 0.9),rgba(41, 120, 146, 0.8));
+            border-radius: 60px;
+            padding: 7px 16px;
+            margin-bottom: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            backdrop-filter: blur(8px);
+        }
+        .turn-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .check-light {
+            background: #ff4757;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            animation: pulseRed 0.8s infinite;
+        }
+        @keyframes pulseRed {
+            0% { background: #ff4757; box-shadow: 0 0 0px red;}
+            100% { background: #dc2626; box-shadow: 0 0 12px #ff0000;}
+        }
+
+        .board-container {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+            perspective: 1200px;
+        }
+        .chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            background: #2a2a2a;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 25px 40px -12px black, inset 0 1px 2px rgba(255,255,255,0.1);
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border: 3px solid rgba(72, 72, 72, 0.5);
+            transition: 0.2s;
+        }
+        .square {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1.3rem, 7vw, 2.4rem);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            text-shadow: 0 2px 20px rgba(255, 255, 255, 0.538);
+            position: relative;
+            backdrop-filter: brightness(0.98);
+        }
+        .theme-oldtouch .light { background: #e3e3e3; }
+        .theme-oldtouch .dark { background: #262626; }
+        .theme-classic .light { background: #f1e2cc; }
+        .theme-classic .dark { background: #c0893d; }
+        .theme-modern .light { background: #e2f0d9; }
+        .theme-modern .dark { background: #204b37; }
+        .theme-midnight .light { background: #e9eef2; }
+        .theme-midnight .dark { background: #4d0f0f; }
+        .theme-lightest .light { background: #d1d1d1; }
+        .theme-lightest .dark { background: #62b6c0; }
+
+        .square.selected {
+            box-shadow: inset 0 0 0 4px #facc15, 0 0 0 3px #ffea80;
+            transform: scale(0.96);
+            z-index: 5;
+        }
+        .square.valid-move::after {
+            content: '';
+            position: absolute;
+            width: 26%;
+            height: 26%;
+            background: radial-gradient(circle, #3bff6e, #0f9d30);
+            border-radius: 50%;
+            opacity: 0.85;
+            pointer-events: none;
+            box-shadow: 0 0 12px #00ff66;
+        }
+        .square.check-highlight {
+            background: radial-gradient(circle, #ff5e5e, #b91c1c);
+            animation: kingAlert 0.5s infinite alternate;
+        }
+        @keyframes kingAlert {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); box-shadow: inset 0 0 15px red; }
+        }
+        .square:hover {
+            transform: scale(1.01);
+            filter: brightness(1.02);
+        }
+
+        .action-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .status-text {
+            background: linear-gradient(105deg, rgba(255, 255, 255, 0.9),rgba(41, 120, 146, 0.8));
+            padding: 10px 24px;
+            border-radius: 80px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            flex: 1;
+            text-align: center;
+            color: #000000;
+            backdrop-filter: blur(3px);
+        }
+        .premium-btn {
+            background: linear-gradient(105deg, #ffd966, #f59e0b);
+            border: none;
+            padding: 10px 26px;
+            border-radius: 60px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.15s;
+            color: #1e1b0a;
+            font-size: 0.85rem;
+        }
+        .premium-btn:active { transform: scale(0.96); }
+
+        @media (max-width: 680px) {
+            .theme-selector { gap: 5px; }
+            .theme-chip { padding: 4px 8px; font-size: 0.65rem; }
+        }
+        @media (max-width: 550px) {
+            .chess-premium { padding: 16px 12px 22px; border-radius: 42px; }
+            .title-glow h1 { font-size: 1.2rem; }
+            .theme-chip { padding: 5px 8px; font-size: 0.55rem; }
+            .turn-status { padding: 10px 14px; }
+            .turn-badge { font-size: 0.85rem; }
+            .square { font-size: clamp(1rem, 6vw, 1.8rem); }
+            .status-text { font-size: 0.7rem; padding: 6px 12px; }
+        }
+        @media (max-width: 420px) {
+            .square { font-size: clamp(0.85rem, 5.5vw, 1.4rem); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="chess-premium" id="chessApp">
+    <div class="hero-header">
+        <div class="title-glow">
+            <h1><i class="fas fa-crown"></i>CHESS · ELITE</h1>
+            <p>· Play Namaji's Game ·</p>
+        </div>
+        <div class="theme-selector">
+            <button class="theme-chip" data-theme="oldtouch">✨ OLD</button>
+            <button class="theme-chip" data-theme="classic">♔ CLASSIC</button>
+            <button class="theme-chip" data-theme="modern">🌿 MODERN</button>
+            <button class="theme-chip" data-theme="midnight">🌙 MID</button>
+            <button class="theme-chip" data-theme="lightest">🌞 LIGHT</button>
+        </div>
+    </div>
+
+    <div class="turn-status">
+        <div class="turn-badge" id="turnDisplay">
+            <i class="fas fa-chess-queen"></i> WHITE TURN
+        </div>
+        <div id="checkIndicator" class="check-light" style="display: none;">⚡ CHECK ⚡</div>
+    </div>
+
+    <div class="board-container">
+        <div class="chessboard" id="chessboard"></div>
+    </div>
+
+    <div class="action-footer">
+        <div class="status-text" id="gameMessage">✨ SELECT A PIECE TO BEGIN</div>
+        <button class="premium-btn" id="resetGameBtn"><i class="fas fa-sync-alt"></i> NEW DUEL</button>
+    </div>
+</div>
+
+<script>
+    // ==================== PERMANENT SOUND SYSTEM (No Toggle Button) ====================
+    let audioCtx = null;
+    let soundInitialized = false;
+    
+    const soundFiles = {
+    move: new Audio()
+};
+    soundFiles.move.src = 'sound/move.mp3';
+    soundFiles.move.volume = 0.8;
+
+
+    function initAudio() {
+    // AudioContext को resume करें (कुछ browsers के लिए)
+    if (audioCtx === null) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+    
+    // Core sound playing function - generates beautiful synthetic sounds
+    function playSound(type) {
+        // Ensure audio is initialized
+        if (!audioCtx) {
+            initAudio();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        let frequency = 523.25; // C5 default
+        let duration = 0.15;
+        let volume = 0.2;
+        
+        switch(type) {
+            case 'move':
+                // Normal move: pleasant pluck sound
+                frequency = 523.25;
+                duration = 0.12;
+                volume = 0.18;
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.08);
+                break;
+                
+            case 'capture':
+                // Capture: deeper, satisfying thud
+                frequency = 392.00;
+                duration = 0.2;
+                volume = 0.22;
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.exponentialRampToValueAtTime(392, now + 0.12);
+                break;
+                
+            case 'check':
+                // Check: alert, rising alarm
+                frequency = 659.25;
+                duration = 0.35;
+                volume = 0.28;
+                osc.frequency.setValueAtTime(659.25, now);
+                osc.frequency.setValueAtTime(783.99, now + 0.15);
+                break;
+                
+            case 'gameEnd':
+                // Game end: victory fanfare
+                frequency = 880;
+                duration = 0.5;
+                volume = 0.25;
+                osc.frequency.setValueAtTime(880, now);
+                osc.frequency.exponentialRampToValueAtTime(440, now + 0.3);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                osc.start();
+                osc.stop(now + 0.5);
+                return;
+                
+            case 'select':
+                // Piece selection sound (subtle)
+                frequency = 440;
+                duration = 0.08;
+                volume = 0.12;
+                osc.frequency.setValueAtTime(440, now);
+                break;
+        }
+        
+        if (type !== 'gameEnd') {
+            gain.gain.setValueAtTime(volume, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            osc.start();
+            osc.stop(now + duration);
+        }
+    }
+
+    function playMoveSound(isCapture) {
+    if (soundFiles.move) {
+        soundFiles.move.currentTime = 0;  // restart agar already playing ho
+        soundFiles.move.play().catch(e => console.log("Sound error:", e));
+    }
+}
+    
+    function playCheckSound() {
+        playSound('check');
+    }
+    
+    function playGameEndSound() {
+        playSound('gameEnd');
+    }
+    
+    function playSelectSound() {
+        playSound('select');
+    }
+    
+    // Initialize audio on any user click (required for browser autoplay policies)
+    function setupAudioOnFirstInteraction() {
+        const handler = () => {
+            if (!audioCtx) {
+                initAudio();
+                if (audioCtx) {
+                    audioCtx.resume().then(() => {
+                        console.log("🎵 Sound system activated!");
+                    });
+                }
+            }
+            document.removeEventListener('click', handler);
+            document.removeEventListener('touchstart', handler);
+        };
+        document.addEventListener('click', handler);
+        document.addEventListener('touchstart', handler);
+    }
+    setupAudioOnFirstInteraction();
+    
+    // ==================== FULL CHESS ENGINE ====================
+    let board = Array(8).fill().map(() => Array(8).fill(''));
+    let turn = 'white';
+    let selectedRow = null, selectedCol = null;
+    let gameOver = false;
+    let winner = null;
+    let currentTheme = 'classic';
+
+    function initBoard() {
+        for(let i=0;i<8;i++) for(let j=0;j<8;j++) board[i][j] = '';
+        for(let i=0;i<8;i++) { board[1][i] = 'p'; board[6][i] = 'P'; }
+        const backBlack = ['r','n','b','q','k','b','n','r'];
+        const backWhite = ['R','N','B','Q','K','B','N','R'];
+        for(let i=0;i<8;i++) { board[0][i] = backBlack[i]; board[7][i] = backWhite[i]; }
+    }
+
+    function getPieceColor(piece) {
+        if(!piece) return null;
+        return (piece === piece.toUpperCase() && piece !== piece.toLowerCase()) ? 'white' : 'black';
+    }
+
+    function isValidMoveWithoutCheck(piece, fromRow, fromCol, toRow, toCol, boardState) {
+        const type = piece.toLowerCase();
+        const dr = toRow - fromRow, dc = toCol - fromCol;
+        const absDR = Math.abs(dr), absDC = Math.abs(dc);
+        const target = boardState[toRow][toCol];
+        if(getPieceColor(target) === getPieceColor(piece)) return false;
+
+        if(type === 'p') {
+            const dir = getPieceColor(piece) === 'white' ? -1 : 1;
+            const startRow = getPieceColor(piece) === 'white' ? 6 : 1;
+            if(dc === 0 && !target && dr === dir) return true;
+            if(dc === 0 && !target && dr === 2*dir && fromRow === startRow && !boardState[fromRow+dir][fromCol]) return true;
+            if(Math.abs(dc) === 1 && dr === dir && target) return true;
+            return false;
+        }
+        if(type === 'n') return (absDR === 2 && absDC === 1) || (absDR === 1 && absDC === 2);
+        if(type === 'k') {
+            if(absDR <= 1 && absDC <= 1) return true;
+            if(absDR === 0 && absDC === 2 && !gameOver) {
+                const row = fromRow;
+                const rookCol = dc === 2 ? 7 : 0;
+                const between = dc === 2 ? [5,6] : [1,2,3];
+                const rookPiece = boardState[row][rookCol];
+                const correctRook = getPieceColor(piece) === 'white' ? 'R' : 'r';
+                if(rookPiece === correctRook && between.every(c => !boardState[row][c])) return true;
+            }
+            return false;
+        }
+        if(type === 'r') {
+            if(fromRow !== toRow && fromCol !== toCol) return false;
+            if(fromRow === toRow) {
+                let step = dc > 0 ? 1 : -1;
+                for(let c=fromCol+step; c!==toCol; c+=step) if(boardState[fromRow][c]) return false;
+                return true;
+            } else {
+                let step = dr > 0 ? 1 : -1;
+                for(let r=fromRow+step; r!==toRow; r+=step) if(boardState[r][fromCol]) return false;
+                return true;
+            }
+        }
+        if(type === 'b') {
+            if(absDR !== absDC) return false;
+            let rStep = dr>0?1:-1, cStep = dc>0?1:-1;
+            let r = fromRow+rStep, c = fromCol+cStep;
+            while(r !== toRow) {
+                if(boardState[r][c]) return false;
+                r += rStep; c += cStep;
+            }
+            return true;
+        }
+        if(type === 'q') {
+            const isRook = (fromRow === toRow || fromCol === toCol);
+            const isBishop = (absDR === absDC);
+            if(!isRook && !isBishop) return false;
+            if(fromRow === toRow) {
+                let step = dc>0?1:-1;
+                for(let c=fromCol+step; c!==toCol; c+=step) if(boardState[fromRow][c]) return false;
+                return true;
+            } else if(fromCol === toCol) {
+                let step = dr>0?1:-1;
+                for(let r=fromRow+step; r!==toRow; r+=step) if(boardState[r][fromCol]) return false;
+                return true;
+            } else {
+                let rStep = dr>0?1:-1, cStep = dc>0?1:-1;
+                let r=fromRow+rStep, c=fromCol+cStep;
+                while(r !== toRow) {
+                    if(boardState[r][c]) return false;
+                    r+=rStep; c+=cStep;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function isKingInCheck(color, boardState) {
+        let kingPos = null;
+        const kingChar = color === 'white' ? 'K' : 'k';
+        for(let i=0;i<8;i++) for(let j=0;j<8;j++) if(boardState[i][j] === kingChar) kingPos = [i,j];
+        if(!kingPos) return false;
+        for(let i=0;i<8;i++) for(let j=0;j<8;j++) {
+            const p = boardState[i][j];
+            if(p && getPieceColor(p) !== color && isValidMoveWithoutCheck(p, i, j, kingPos[0], kingPos[1], boardState)) return true;
+        }
+        return false;
+    }
+
+    function wouldBeInCheck(piece, fromRow, fromCol, toRow, toCol, boardState) {
+        const copy = boardState.map(row => [...row]);
+        copy[toRow][toCol] = copy[fromRow][fromCol];
+        copy[fromRow][fromCol] = '';
+        return isKingInCheck(getPieceColor(piece), copy);
+    }
+
+    function getAllMoves(color, boardState) {
+        let moves = [];
+        for(let i=0;i<8;i++) for(let j=0;j<8;j++) {
+            const p = boardState[i][j];
+            if(p && getPieceColor(p) === color) {
+                for(let tr=0;tr<8;tr++) for(let tc=0;tc<8;tc++) {
+                    if(i===tr && j===tc) continue;
+                    if(isValidMoveWithoutCheck(p, i, j, tr, tc, boardState) && !wouldBeInCheck(p, i, j, tr, tc, boardState))
+                        moves.push({from:[i,j], to:[tr,tc]});
+                }
+            }
+        }
+        return moves;
+    }
+
+    function isCheckmate(color, boardState) {
+        if(!isKingInCheck(color, boardState)) return false;
+        return getAllMoves(color, boardState).length === 0;
+    }
+    function isStalemate(color, boardState) {
+        if(isKingInCheck(color, boardState)) return false;
+        return getAllMoves(color, boardState).length === 0;
+    }
+
+    function tryMove(fromRow, fromCol, toRow, toCol) {
+        if(gameOver) return false;
+        const piece = board[fromRow][fromCol];
+        if(!piece || getPieceColor(piece) !== turn) return false;
+        if(!isValidMoveWithoutCheck(piece, fromRow, fromCol, toRow, toCol, board)) return false;
+        if(wouldBeInCheck(piece, fromRow, fromCol, toRow, toCol, board)) return false;
+        
+        const isCapture = board[toRow][toCol] !== '';
+        
+        // Execute move
+        board[toRow][toCol] = board[fromRow][fromCol];
+        board[fromRow][fromCol] = '';
+        const movedPiece = board[toRow][toCol];
+        if(movedPiece.toLowerCase() === 'p' && (toRow === 0 || toRow === 7)) {
+            board[toRow][toCol] = turn === 'white' ? 'Q' : 'q';
+        }
+        
+        // Play sound based on move type
+        playMoveSound(isCapture);
+        
+        turn = turn === 'white' ? 'black' : 'white';
+        
+        const inCheckAfter = isKingInCheck(turn, board);
+        if(inCheckAfter) {
+            playCheckSound();
+        }
+        
+        if(isCheckmate(turn, board)) { 
+            gameOver = true; 
+            winner = (turn === 'white' ? 'black' : 'white');
+            playGameEndSound();
+        }
+        else if(isStalemate(turn, board)) { 
+            gameOver = true; 
+            winner = null;
+            playGameEndSound();
+        }
+        renderBoard();
+        updateUI();
+        return true;
+    }
+
+    // UI Functions
+    const boardEl = document.getElementById('chessboard');
+    const turnDisplay = document.getElementById('turnDisplay');
+    const checkIndicator = document.getElementById('checkIndicator');
+    const gameMessage = document.getElementById('gameMessage');
+
+    const pieceMap = { 'k':'♚','q':'♛','r':'♜','b':'♝','n':'♞','p':'♟', 'K':'♔','Q':'♕','R':'♖','B':'♗','N':'♘','P':'♙' };
+    function getSym(p) { return pieceMap[p] || ''; }
+
+    function isValidPreview(pr, pc, tr, tc) {
+        const p = board[pr][pc];
+        if(!p || getPieceColor(p) !== turn) return false;
+        if(!isValidMoveWithoutCheck(p, pr, pc, tr, tc, board)) return false;
+        if(wouldBeInCheck(p, pr, pc, tr, tc, board)) return false;
+        return true;
+    }
+
+    function renderBoard() {
+        boardEl.innerHTML = '';
+        boardEl.className = `chessboard theme-${currentTheme}`;
+        for(let i=0;i<8;i++){
+            for(let j=0;j<8;j++){
+                const piece = board[i][j];
+                const isLight = (i+j)%2===0;
+                const square = document.createElement('div');
+                square.className = `square ${isLight ? 'light' : 'dark'}`;
+                if(selectedRow === i && selectedCol === j) square.classList.add('selected');
+                if(selectedRow !== null && selectedCol !== null && isValidPreview(selectedRow, selectedCol, i, j))
+                    square.classList.add('valid-move');
+                if(piece && ((piece === 'K' && isKingInCheck('white', board)) || (piece === 'k' && isKingInCheck('black', board))))
+                    square.classList.add('check-highlight');
+                square.innerHTML = `<span style="display:block;">${getSym(piece)}</span>`;
+                square.addEventListener('click', (function(r,c){ return function(){ onSquareClick(r,c); }; })(i,j));
+                boardEl.appendChild(square);
+            }
+        }
+    }
+
+    function onSquareClick(row, col) {
+        if(gameOver) return;
+        if(selectedRow === null) {
+            const p = board[row][col];
+            if(p && getPieceColor(p) === turn) {
+                selectedRow = row; selectedCol = col;
+                renderBoard();
+                if(navigator.vibrate) navigator.vibrate(70);
+            }
+        } else {
+            const success = tryMove(selectedRow, selectedCol, row, col);
+            selectedRow = null; selectedCol = null;
+            if(!success) renderBoard();
+            else renderBoard();
+            if(navigator.vibrate && success) navigator.vibrate(10);
+        }
+    }
+
+    function updateUI() {
+        if(gameOver) {
+            if(winner === 'white') turnDisplay.innerHTML = '<i class="fas fa-trophy"></i> WHITE CHAMPION!';
+            else if(winner === 'black') turnDisplay.innerHTML = '<i class="fas fa-trophy"></i> BLACK CHAMPION!';
+            else turnDisplay.innerHTML = '<i class="fas fa-handshake"></i> STALEMATE';
+            gameMessage.innerHTML = winner ? `🏆 ${winner.toUpperCase()} wins the duel! 🏆` : "Game drawn by stalemate";
+            checkIndicator.style.display = 'none';
+            return;
+        }
+        const inCheck = isKingInCheck(turn, board);
+        turnDisplay.innerHTML = `${turn === 'white' ? '⚪ WHITE' : '⚫ BLACK'} to move`;
+        if(inCheck) {
+            checkIndicator.style.display = 'flex';
+            gameMessage.innerHTML = `⚠️ ${turn.toUpperCase()} is in CHECK! Defend your king!`;
+        } else {
+            checkIndicator.style.display = 'none';
+            gameMessage.innerHTML = "👑 Tap piece, then tap square";
+        }
+    }
+
+    function resetGame() {
+        initBoard();
+        turn = 'white';
+        selectedRow = null;
+        selectedCol = null;
+        gameOver = false;
+        winner = null;
+        renderBoard();
+        updateUI();
+        playMoveSound(false); // Reset sound feedback
+    }
+
+    function setTheme(th) {
+        currentTheme = th;
+        renderBoard();
+    }
+
+    // Event Listeners
+    document.querySelectorAll('.theme-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.theme-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            setTheme(btn.getAttribute('data-theme'));
+        });
+    });
+    document.getElementById('resetGameBtn').addEventListener('click', resetGame);
+
+    // Initialize Game
+    initBoard();
+    renderBoard();
+    updateUI();
+    setTheme('classic');
+    document.querySelector('.theme-chip[data-theme="classic"]').classList.add('active');
+    console.log("🔥 PREMIUM CHESS WITH PERMANENT SOUND — Enjoy the game! 🔥");
+</script>
+</body>
+</html>
