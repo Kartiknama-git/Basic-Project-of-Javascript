@@ -1,1 +1,1 @@
-# Basic-Project-of-Javascript
+Javascript Project
